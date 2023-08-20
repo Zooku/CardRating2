@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets API Example</title>
+</head>
+<body>
+    <h1>Google Sheets API Example</h1>
+    
+    <div>
+        <label for="readCell">Read From Cell:</label>
+        <input type="text" id="readCell" placeholder="Example: A1">
+        <button id="readButton">Read Data</button>
+        <p id="readResult"></p>
+    </div>
+    
+    <div>
+        <label for="writeCell">Write To Cell:</label>
+        <input type="text" id="writeCell" placeholder="Example: B2">
+        <input type="text" id="writeValue" placeholder="Value to Write">
+        <button id="writeButton">Write Data</button>
+        <p id="writeResult"></p>
+    </div>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        const CLIENT_ID = '453226678739-4tvjllshmqb9uqsu8fqc34bckqqci0ov.apps.googleusercontent.com';
+        const API_KEY = 'AIzaSyDkm6Akk4HErGTi6dXk3RJobwfh7Ub6WVc';
+        const SPREADSHEET_ID = '1FuiDHGGLBgGlvzc8q04fIGe-CAfdhQ0VcLWEgqPl1nc';
+        let accessToken; // To store the access token after authentication
+
+        function initialize() {
+            gapi.load('client', function () {
+                gapi.client.init({
+                    apiKey: API_KEY,
+                    clientId: CLIENT_ID,
+                    discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+                    scope: 'https://www.googleapis.com/auth/spreadsheets',
+                });
+
+                attachEventListeners();
+            });
+        }
+
+        function attachEventListeners() {
+            document.getElementById('readButton').addEventListener('click', readData);
+            document.getElementById('writeButton').addEventListener('click', writeData);
+        }
+
+        function authenticate() {
+            gapi.auth2.getAuthInstance().signIn().then(function() {
+                accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+                console.log("Authenticated!");
+            });
+        }
+
+        function readData() {
+            const readCell = document.getElementById('readCell').value;
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: SPREADSHEET_ID,
+                range: readCell,
+            }).then(function(response) {
+                const values = response.result.values;
+                const readResultElement = document.getElementById('readResult');
+                readResultElement.textContent = `Read from ${readCell}: ${JSON.stringify(values)}`;
+            }).catch(function(error) {
+                const readResultElement = document.getElementById('readResult');
+                readResultElement.textContent = `Error reading data: ${error.result.error.message}`;
+            });
+        }
+
+        function writeData() {
+            if (!accessToken) {
+                authenticate(); // Authenticate if not already done
+                return;
+            }
+            
+            const writeCell = document.getElementById('writeCell').value;
+            const writeValue = document.getElementById('writeValue').value;
+
+            fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${writeCell}?valueInputOption=RAW`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    values: [[writeValue]],
+                }),
+            }).then(function(response) {
+                console.log(response)
+                const writeResultElement = document.getElementById('writeResult');
+                writeResultElement.textContent = `Data written to ${writeCell}: ${JSON.stringify(response)}`;
+            }).catch(function(error) {
+                const writeResultElement = document.getElementById('writeResult');
+                writeResultElement.textContent = `Error writing data: ${error}`;
+            });
+        }
+
+        // Call the initialization function when the script is loaded
+        initialize();
+    </script>
+</body>
+</html>
