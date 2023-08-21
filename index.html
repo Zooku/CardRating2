@@ -18,7 +18,7 @@
         const updateButton = document.getElementById('updateButton');
     
         // Fetch the initial number from the serverless function
-        fetch('https://card-rating2-zacquiri.vercel.app/api/get-number')
+        fetch('https://card-rating2-8n5j47w53-zacquiri.vercel.app/api/get-number')
             .then(response => response.json())
             .then(data => {
                 numberDisplay.textContent = data.number;
@@ -31,7 +31,7 @@
         updateButton.addEventListener('click', () => {
             const newNumber = newNumberInput.value;
             if (newNumber >= 0 && newNumber <= 9) {
-                fetch('https://card-rating2-zacquiri.vercel.app/api/update-number', {
+                fetch('https://card-rating2-8n5j47w53-zacquiri.vercel.app/api/update-number', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
