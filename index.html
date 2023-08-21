@@ -13,43 +13,42 @@
     <button id="updateButton">Update Number</button>
 
     <script>
-        // Path to the number.json file
-        const numberJSONPath = 'https://card-rating2-zacquiri.vercel.app/number.json';
-
-        // Function to get the number
-        async function getNumber() {
-            try {
-                const response = await fetch(numberJSONPath);
-                const data = await response.json();
-                return data.number;
-            } catch (error) {
+        const numberDisplay = document.getElementById('numberDisplay');
+        const newNumberInput = document.getElementById('newNumber');
+        const updateButton = document.getElementById('updateButton');
+    
+        // Fetch the initial number from the serverless function
+        fetch('https://card-rating2-zacquiri.vercel.app/api/get-number') // Update this URL
+            .then(response => response.json())
+            .then(data => {
+                numberDisplay.textContent = data.number;
+            })
+            .catch(error => {
                 console.error('Error fetching number:', error);
-            }
-        }
-
-        // Function to update the number
-        async function updateNumber(newNumber) {
+            });
+    
+        // Handle number update
+        updateButton.addEventListener('click', () => {
+            const newNumber = newNumberInput.value;
             if (newNumber >= 0 && newNumber <= 9) {
-      try {
-        await fs.writeFile('number.json', JSON.stringify({ number: newNumber }));
-        res.sendStatus(200);
-      } catch (error) {
-        console.error('Error updating number:', error);
-        res.status(500).json({ error: 'Internal server error' });
-      }
-    } else {
-      res.status(400).json({ error: 'Invalid number' });
-    }
-        }
-
-        // Example usage
-        getNumber().then(number => {
-            console.log('Current number:', number);
-            document.getElementById('numberDisplay').textContent = number;
+                fetch('https://card-rating2-zacquiri.vercel.app/api/update-number', { // Update this URL
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ number: newNumber })
+                })
+                .then(() => {
+                    numberDisplay.textContent = newNumber;
+                })
+                .catch(error => {
+                    console.error('Error updating number:', error);
+                });
+            } else {
+                alert('Please enter a valid single-digit number.');
+            }
         });
-
-        updateNumber(42);
-
     </script>
+    
 </body>
 </html>
