@@ -13,53 +13,44 @@
     <button id="updateButton">Update Number</button>
 
     <script>
-        // In your index.html or JavaScript file
+        // Path to the number.json file
+        const numberJSONPath = 'https://card-rating2-8n5j47w53-zacquiri.vercel.app/number.json';
 
-// Replace this with the actual deployment URL environment variable
-const API_URL = process.env.API_URL;
+        // Function to get the number
+        async function getNumber() {
+            try {
+                const response = await fetch(numberJSONPath);
+                const data = await response.json();
+                return data.number;
+            } catch (error) {
+                console.error('Error fetching number:', error);
+            }
+        }
 
-// Paths for serverless functions
-const getNumberPath = '/api/get-number';
-const updateNumberPath = '/api/update-number';
+        // Function to update the number
+        async function updateNumber(newNumber) {
+            try {
+                const response = await fetch(updateNumberURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ number: newNumber }),
+                });
+                const data = await response.json();
+                console.log('Number updated:', data);
+            } catch (error) {
+                console.error('Error updating number:', error);
+            }
+        }
 
-// Full URLs for serverless functions
-const getNumberURL = API_URL + getNumberPath;
-const updateNumberURL = API_URL + updateNumberPath;
+        // Example usage
+        getNumber().then(number => {
+            console.log('Current number:', number);
+            document.getElementById('numberDisplay').textContent = number;
+        });
 
-// Function to get the number
-async function getNumber() {
-  try {
-    const response = await fetch(getNumberURL);
-    const data = await response.json();
-    return data.number;
-  } catch (error) {
-    console.error('Error fetching number:', error);
-  }
-}
-
-// Function to update the number
-async function updateNumber(newNumber) {
-  try {
-    const response = await fetch(updateNumberURL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ number: newNumber }),
-    });
-    const data = await response.json();
-    console.log('Number updated:', data);
-  } catch (error) {
-    console.error('Error updating number:', error);
-  }
-}
-
-// Example usage
-getNumber().then(number => {
-  console.log('Current number:', number);
-});
-
-updateNumber(42);
+        updateNumber(42);
 
     </script>
 </body>
