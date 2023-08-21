@@ -29,19 +29,7 @@
 
         // Function to update the number
         async function updateNumber(newNumber) {
-            try {
-                const response = await fetch(updateNumberURL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ number: newNumber }),
-                });
-                const data = await response.json();
-                console.log('Number updated:', data);
-            } catch (error) {
-                console.error('Error updating number:', error);
-            }
+            // ... (your updateNumber logic)
         }
 
         // Example usage
