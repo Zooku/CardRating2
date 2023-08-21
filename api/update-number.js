@@ -1,4 +1,7 @@
 module.exports = async (req, res) => {
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Replace with your frontend's domain if necessary
+    
     const newNumber = req.body.number;
     if (newNumber >= 0 && newNumber <= 9) {
       try {

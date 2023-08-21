@@ -1,4 +1,6 @@
 module.exports = async (req, res) => {
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Replace with your frontend's domain if necessary 
   try {
     const data = await fs.readFile('number.json', 'utf-8');
     const number = JSON.parse(data).number;
